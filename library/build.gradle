@@ -1,13 +1,15 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
-//apply plugin: 'com.dicedmelon.gradle.jacoco-android'
+apply plugin: 'maven-publish'
 
 jacoco {
     toolVersion = "0.8.11"
 }
 
 android {
-    namespace 'com.github.karczews.rxbroadcastreceiver'
+    namespace group + '.rx3BroadcastReceiver'
     compileSdkVersion = 34
     buildToolsVersion = '34.0.0'
 
@@ -26,11 +28,11 @@ android {
         }
     }
 
-/*    jacocoAndroidUnitTestReport {
-        csv.enabled false
-        html.enabled true
-        xml.enabled true
-    }*/
+    publishing {
+        // Publishes "fullRelease" build variant with "fullRelease" component created by
+        // Android Gradle plugin
+        singleVariant("release")
+    }
 
     tasks.withType(Test) {
         jacoco.includeNoLocationClasses true
@@ -38,16 +40,62 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            jacoco {
-                includeNoLocationClasses = true
+        unitTests {
+            includeAndroidResources = true
+
+            //noinspection ConfigurationAvoidance
+            all {
+                testLogging {
+                    events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                }
+                jacoco {
+                    includeNoLocationClasses = true
+                    excludes = ['jdk.internal.*']
+                }
+            }
+        }
+        managedDevices {
+            devices {
+                register("pixel2api33", ManagedVirtualDevice) {
+                    // Use device profiles you typically see in
+                    // Android Studio
+                    device = "Automated tests device"
+                    apiLevel = 33
+                    // You can also specify "aosp" if you don’t require
+                    // Google Play Services.
+                    systemImageSource = "google"
+                    // You can also specify "google-atd"
+                    // if you require Google Play Services.
+                    //systemImageSource = "aosp-atd"
+                    //abi = "x86" //już niedostępne
+                    // Whether the image must be a 64 bit image. Defaults to
+                    // false, in which case the managed device will use a
+                    // 32 bit image. Not applicable to arm64 machines.
+                    require64Bit = false
+                }
             }
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    lint {
+        abortOnError false
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
@@ -60,4 +108,20 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.mockitoCore
     testImplementation deps.utilsVerifier
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = 'rx3-broadcast-receiver'
+            version = "3.0.0"
+            pom {
+                description = 'Podbicie do RxJava 3.x'
+            }
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
