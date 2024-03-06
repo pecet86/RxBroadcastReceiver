@@ -15,10 +15,12 @@ package com.github.karczews.rxbroadcastreceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
+
 
 /**
  * Utility class containing static factory methods creating Observable

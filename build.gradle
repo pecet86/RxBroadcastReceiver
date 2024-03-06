@@ -1,30 +1,36 @@
 ext.deps = [
-        rxJava2           : 'io.reactivex.rxjava2:rxjava:2.2.21',
-        rxAndroid2        : 'io.reactivex.rxjava2:rxandroid:2.1.1',
-        supportAnnotations: 'androidx.annotation:annotation:1.1.0',
+        rxJava3           : 'io.reactivex.rxjava3:rxjava:3.1.8',
+        rxAndroid3        : 'io.reactivex.rxjava3:rxandroid:3.0.2',
+        supportAnnotations: 'androidx.annotation:annotation:1.7.1',
+        testCore          : 'androidx.test:core:1.5.0',
         junit             : 'junit:junit:4.13.2',
         truth             : 'com.google.truth:truth:1.1.2',
-        robolectric       : 'org.robolectric:robolectric:4.3.1',
-        mockitoCore       : 'org.mockito:mockito-core:3.8.0',
+        robolectric       : 'org.robolectric:robolectric:4.11.1',
+        mockitoCore       : 'org.mockito:mockito-core:5.11.0',
         utilsVerifier     : 'com.github.karczews:utilsverifier:1.0.0'
 ]
 
 buildscript {
     repositories {
+        mavenLocal()
+        mavenCentral()
         google()
-        jcenter()
+        maven { url "https://jitpack.io" }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.2'
-        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.4'
-        classpath 'digital.wup:android-maven-publish:3.6.3'
+        classpath 'com.android.tools.build:gradle:8.1.4'
+        //classpath 'com.dicedmelon.gradle:jacoco-android:0.1.5'
     }
 }
 
 allprojects {
     repositories {
+        mavenLocal()
+        mavenCentral()
         google()
-        jcenter()
+        maven { url "https://jitpack.io" }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 }
 

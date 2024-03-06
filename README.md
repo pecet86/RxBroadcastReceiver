@@ -1,5 +1,5 @@
 # ReactiveBroadcast
-Simple RxJava2 binding for Android BroadcastReceiver
+Simple RxJava3 binding for Android BroadcastReceiver
 
 [![Build Status](https://travis-ci.org/karczews/RxBroadcastReceiver.svg?branch=master)](https://travis-ci.org/karczews/RxBroadcastReceiver)
 [![codecov](https://codecov.io/gh/karczews/RxBroadcastReceiver/branch/master/graph/badge.svg)](https://codecov.io/gh/karczews/RxBroadcastReceiver)

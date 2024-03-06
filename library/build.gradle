@@ -1,15 +1,19 @@
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
-apply plugin: 'jacoco-android'
-apply from: '../gradle-mvn-push.gradle'
-apply from: '../gradle-mvn-local.gradle'
+//apply plugin: 'com.dicedmelon.gradle.jacoco-android'
 
+jacoco {
+    toolVersion = "0.8.11"
+}
 
 android {
-    compileSdkVersion 29
+    namespace 'com.github.karczews.rxbroadcastreceiver'
+    compileSdkVersion = 34
+    buildToolsVersion = '34.0.0'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 26
+        targetSdkVersion 34
     }
     buildTypes {
         debug {
@@ -22,10 +26,15 @@ android {
         }
     }
 
-    jacocoAndroidUnitTestReport {
+/*    jacocoAndroidUnitTestReport {
         csv.enabled false
         html.enabled true
         xml.enabled true
+    }*/
+
+    tasks.withType(Test) {
+        jacoco.includeNoLocationClasses true
+        jacoco.excludes = ['jdk.internal.*']
     }
 
     testOptions {
@@ -35,13 +44,18 @@ android {
             }
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation deps.rxJava2
-    implementation deps.rxAndroid2
+    implementation deps.rxJava3
+    implementation deps.rxAndroid3
     implementation deps.supportAnnotations
+    testImplementation deps.testCore
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.mockitoCore

@@ -12,17 +12,25 @@
  */
 package com.github.karczews.rxbroadcastreceiver;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+import static android.os.Looper.getMainLooper;
+import static android.os.Looper.myLooper;
+import static java.util.Objects.requireNonNull;
+
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
-import android.os.Looper;
+
 import androidx.annotation.NonNull;
 
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.functions.Cancellable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+
 
 class RxBroadcastReceiver implements ObservableOnSubscribe<Intent> {
 
@@ -36,11 +44,13 @@ class RxBroadcastReceiver implements ObservableOnSubscribe<Intent> {
         this.intentFilter = intentFilter;
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void subscribe(final ObservableEmitter<Intent> emitter) {
         if (!Preconditions.checkLooperThread(emitter)) {
             return;
         }
+
         final BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(final Context context, final Intent intent) {
@@ -48,16 +58,20 @@ class RxBroadcastReceiver implements ObservableOnSubscribe<Intent> {
             }
         };
 
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            context.registerReceiver(receiver, intentFilter);
-        } else {
-            context.registerReceiver(receiver, intentFilter, null, new Handler(Looper.myLooper()));
-        }
-        emitter.setCancellable(new Cancellable() {
-            @Override
-            public void cancel() {
-                context.unregisterReceiver(receiver);
+        if (SDK_INT >= TIRAMISU) {
+            if (myLooper() == getMainLooper()) {
+                context.registerReceiver(receiver, intentFilter, RECEIVER_NOT_EXPORTED);
+            } else {
+                context.registerReceiver(receiver, intentFilter, null, new Handler(requireNonNull(myLooper())), RECEIVER_NOT_EXPORTED);
             }
-        });
+        } else {
+            if (myLooper() == getMainLooper()) {
+                context.registerReceiver(receiver, intentFilter);
+            } else {
+                context.registerReceiver(receiver, intentFilter, null, new Handler(requireNonNull(myLooper())));
+            }
+        }
+
+        emitter.setCancellable(() -> context.unregisterReceiver(receiver));
     }
 }

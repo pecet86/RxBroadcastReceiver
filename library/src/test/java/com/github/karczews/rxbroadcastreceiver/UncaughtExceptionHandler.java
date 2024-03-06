@@ -13,10 +13,10 @@
 
 package com.github.karczews.rxbroadcastreceiver;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertTrue;
 
 public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
     private final List<Throwable> mCaughtThrowables = new ArrayList<>();
